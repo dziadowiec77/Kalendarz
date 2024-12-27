@@ -38,6 +38,31 @@
                 <span asp-validation-for="TypWydarzeniaId" class="text-danger"></span>
             </div>
             <div class="form-group">
+                <label asp-for="Powtarzalnosc" class="control-label"></label>
+                <input asp-for="Powtarzalnosc" class="form-check-input" type="checkbox" />
+                <span asp-validation-for="Powtarzalnosc" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label for="CoIle">Częstotliwość powtarzania</label>
+                <select id="CoIle" name="CoIle" class="form-control">
+                    <option value="">Brak</option>
+                    <option value="Daily">Codziennie</option>
+                    <option value="Weekly">Co tydzień</option>
+                    <option value="Monthly">Co miesiąc</option>
+                    <option value="Yearly">Co rok</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label asp-for="Powiadomienie" class="control-label"></label>
+                <input asp-for="Powiadomienie" class="form-check-input" type="checkbox" />
+                <span asp-validation-for="Powiadomienie" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Udostepnij" class="control-label"></label>
+                <input asp-for="Udostepnij" class="form-check-input" type="checkbox" />
+                <span asp-validation-for="Udostepnij" class="text-danger"></span>
+            </div>
+            <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>
         </form>

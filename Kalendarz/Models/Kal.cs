@@ -17,5 +17,9 @@ namespace Kalendarz.Models
 
         public int? TypWydarzeniaId { get; set; }
         public TypWydarzenia? TypWydarzenia { get; set; }
+        public bool Powtarzalnosc { get; set; }
+        public string? CoIle { get; set; }
+        public bool Powiadomienie { get; set; }
+        public bool Udostepnij { get; set; }
     }
 }

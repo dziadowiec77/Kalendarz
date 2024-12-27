@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Kalendarz.Controllers
 {
@@ -20,21 +21,83 @@ namespace Kalendarz.Controllers
         public JsonResult GetEvents()
         {
             var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+
+            // Pobieramy wydarzenia dla zalogowanego użytkownika
             var events = _context.Kal
                 .Where(k => k.KalendarzUserId == userId)
-                .Select(k => new
-                {
-                    id = k.ID,
-                    title = k.Nazwa,
-                    description = k.Opis,
-                    start = k.StartDate,
-                    end = k.EndDate,
-                    type = k.TypWydarzeniaId
-                })
+                .Include(k => k.TypWydarzenia)
                 .ToList();
 
-            return Json(events);
+            var fullCalendarEvents = new List<object>();
+
+            foreach (var ev in events)
+            {
+                // Jeśli wydarzenie jest powtarzalne
+                if (ev.Powtarzalnosc == true && !string.IsNullOrEmpty(ev.CoIle))
+                {
+                    DateTime currentStart = ev.StartDate;
+                    DateTime currentEnd = ev.EndDate;
+                    int count = 1;
+                    for (int i = 0; i < count; i++)
+                    {
+                        fullCalendarEvents.Add(new
+                        {
+                            id = ev.ID,
+                            title = ev.Nazwa,
+                            description = ev.Opis,
+                            start = currentStart,
+                            end = currentEnd,
+                            type = ev.TypWydarzeniaId,
+                            color = ev.TypWydarzenia?.Kolor
+                        });
+
+                        // Dodaj interwał powtarzania
+                        switch (ev.CoIle)
+                        {
+                            case "Daily":
+                                currentStart = currentStart.AddDays(1);
+                                currentEnd = currentEnd.AddDays(1);
+                                count = 7;
+                                break;
+                            case "Weekly":
+                                currentStart = currentStart.AddDays(7);
+                                currentEnd = currentEnd.AddDays(7);
+                                count = 51;
+                                break;
+                            case "Monthly":
+                                currentStart = currentStart.AddMonths(1);
+                                currentEnd = currentEnd.AddMonths(1);
+                                count = 12;
+                                break;
+                            case "Yearly":
+                                currentStart = currentStart.AddYears(1);
+                                currentEnd = currentEnd.AddYears(1);
+                                count = 5;
+                                break;
+                        }
+                    }
+                }
+                else
+                {
+                    // Jeśli wydarzenie nie jest powtarzalne
+                    fullCalendarEvents.Add(new
+                    {
+                        id = ev.ID,
+                        title = ev.Nazwa,
+                        description = ev.Opis,
+                        start = ev.StartDate,
+                        end = ev.EndDate,
+                        type = ev.TypWydarzeniaId,
+                        color = ev.TypWydarzenia?.Kolor
+                    });
+                }
+
+            }
+
+            return Json(fullCalendarEvents);
         }
+
+
         // GET: KalController
         [Authorize]
         public ActionResult Index()
@@ -122,7 +185,17 @@ namespace Kalendarz.Controllers
         // GET: KalController/Delete/5
         public ActionResult Delete(int id)
         {
-            return View();
+            var kalendarz = _context.Kal
+                .Include(k => k.TypWydarzenia)
+                .FirstOrDefault(k => k.ID == id);
+
+
+            if (kalendarz == null)
+            {
+                return NotFound();
+            }
+
+            return View(kalendarz);
         }
 
         // POST: KalController/Delete/5

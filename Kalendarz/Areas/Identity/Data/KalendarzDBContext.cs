@@ -24,6 +24,7 @@ public class KalendarzDBContext : IdentityDbContext<KalendarzUser, IdentityRole<
     }
     protected override void OnModelCreating(ModelBuilder builder)
     {
+
         base.OnModelCreating(builder);
 
         builder.Entity<Kal>()

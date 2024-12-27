@@ -4,6 +4,7 @@ using Kalendarz.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 namespace Kalendarz.Controllers
@@ -61,7 +62,14 @@ namespace Kalendarz.Controllers
         // GET: TypWydarzeniaController/Edit/5
         public ActionResult Edit(int id)
         {
-            return View();
+            var typWydarzenia = _context.TypWydarzenia.FirstOrDefault(k => k.ID == id);
+
+            if (typWydarzenia == null)
+            {
+                return NotFound();
+            }
+
+            return View(typWydarzenia);
         }
 
         // POST: TypWydarzeniaController/Edit/5
@@ -83,16 +91,10 @@ namespace Kalendarz.Controllers
             }
         }
 
-        // GET: TypWydarzeniaController/Delete/5
-        //public ActionResult Delete(int id)
-        //{
-
-        //    return View();
-        //}
-
-        public async Task<IActionResult> Delete(int? id)
+        //GET: TypWydarzeniaController/Delete/5
+        public ActionResult Delete(int id)
         {
-            var typWydarzenia = await _context.TypWydarzenia.FindAsync(id);
+            var typWydarzenia = _context.TypWydarzenia.Find(id);
             if (typWydarzenia == null)
             {
                 return NotFound();
@@ -104,7 +106,7 @@ namespace Kalendarz.Controllers
             }
 
             _context.TypWydarzenia.Remove(typWydarzenia);
-            await _context.SaveChangesAsync();
+            _context.SaveChanges();
             return RedirectToAction(nameof(Index));
         }
 

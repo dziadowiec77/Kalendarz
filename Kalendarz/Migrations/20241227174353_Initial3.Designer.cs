@@ -4,6 +4,7 @@ using Kalendarz.Areas.Identity.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Kalendarz.Migrations
 {
     [DbContext(typeof(KalendarzDBContext))]
-    partial class KalendarzDBContextModelSnapshot : ModelSnapshot
+    [Migration("20241227174353_Initial3")]
+    partial class Initial3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -107,9 +110,6 @@ namespace Kalendarz.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
-                    b.Property<string>("CoIle")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime2");
 
@@ -124,9 +124,6 @@ namespace Kalendarz.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("Powiadomienie")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("Powtarzalnosc")
                         .HasColumnType("bit");
 
                     b.Property<DateTime>("StartDate")

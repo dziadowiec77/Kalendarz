@@ -9,6 +9,6 @@ namespace Kalendarz.Models
         public string? Kolor { get; set; }
         public required ICollection<Kal> Kal { get; set; }
         public int UserId { get; set; }
-        public KalendarzUser User { get; set; }
+        public KalendarzUser? User { get; set; }
     }
 }

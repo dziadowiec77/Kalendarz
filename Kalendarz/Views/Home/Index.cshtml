@@ -1,8 +1,46 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
 }
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+          var calendarEl = document.getElementById('calendar');
+          var calendar = new FullCalendar.Calendar(calendarEl, {
+            height: 600,
+            navLinks: true,
+            initialView: 'dayGridMonth',
+            events: '/Home/GetEvents',
+            headerToolbar: {  // Dodaj pasek narzędzi
+              left: 'prev,next today',
+              center: 'title',
+              right: 'dayGridMonth,timeGridWeek,timeGridDay'
+            },
+            
+            eventDidMount: function (info) {
+              info.el.style.backgroundColor = info.event.extendedProps.backgroundColor;
+            },
+            eventClick: function (info) {
+              window.location.href = '/Home/Details/' + info.event.id;
+            },
+            eventDidRender: function (info) {
+              var eventEl = info.el;
+              var eventObj = info.event;
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+              var ownerElement = document.createElement('div');
+              ownerElement.classList.add('fc-event-owner');
+              ownerElement.textContent = 'Właściciel: ' + eventObj.extendedProps.owner;
+              eventEl.appendChild(ownerElement);
+            }
+          });
+          calendar.render();
+        });
+    </script>
+</head>
+<body>
+    <div id="calendar"></div>
+</body>
+</html>

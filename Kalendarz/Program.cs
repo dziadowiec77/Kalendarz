@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Kalendarz.Areas.Identity.Data;
 using Kalendarz.Models;
 using Microsoft.Extensions.DependencyInjection;
+
 var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("KalendarzDBContextConnection") ?? throw new InvalidOperationException("Connection string 'KalendarzDBContextConnection' not found.");
 
@@ -11,7 +12,6 @@ builder.Services.AddDefaultIdentity<KalendarzUser>(options => options.SignIn.Req
     .AddRoles<IdentityRole<int>>()
     .AddEntityFrameworkStores<KalendarzDBContext>();
 builder.Services.AddDbContext<KalendarzDBContext>(options=> options.UseSqlServer(builder.Configuration.GetConnectionString("DevConnection")));
-
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
