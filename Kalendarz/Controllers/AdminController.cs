@@ -1,19 +1,23 @@
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Security.Claims;
 using Kalendarz.Areas.Identity.Data;
 using Kalendarz.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 namespace Kalendarz.Controllers
 {
-    public class HomeController : Controller
+    [Authorize]
+    public class AdminController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        private readonly ILogger<AdminController> _logger;
         private readonly KalendarzDBContext _context;
 
-        public HomeController(ILogger<HomeController> logger, KalendarzDBContext context)
+        private const string AdminEmail = "admin@gmail.com";
+
+        public AdminController(ILogger<AdminController> logger, KalendarzDBContext context)
         {
             _context = context;
             _logger = logger;
@@ -22,40 +26,21 @@ namespace Kalendarz.Controllers
         [HttpGet]
         public JsonResult GetEvents()
         {
-            var userEmail = User.FindFirstValue(ClaimTypes.Email);
-
-            var allEvents = _context.Kal
+            var events = _context.Kal
                 .Include(k => k.TypWydarzenia)
-                .Include(k => k.Powtarzalnosc)
                 .Include(k => k.KalendarzUser)
-                .Include(k => k.Udostepnianie)
-                .ToList();
-
-            var userEvents = new List<Kal>();
-
-            foreach (var ev in allEvents)
-            {
-                if (ev.Udostepnianie != null && ev.Udostepnianie.Udostepnij)
-                {
-                    var emails = ev.Udostepnianie.Email?.Split(' ') ?? Array.Empty<string>();
-
-                    if (emails.Length == 0 || emails.Contains(userEmail) || ev.KalendarzUser?.Email == userEmail)
-                    {
-                        userEvents.Add(ev);
-                    }
-                }
-            }
+                .Include(k => k.Powtarzalnosc)
+                .Where(k => k.Udostepnianie.Udostepnij == true);
 
             var fullCalendarEvents = new List<object>();
 
-            foreach (var ev in userEvents)
+            foreach (var ev in events)
             {
                 if (ev.Powtarzalnosc?.Powtorz == true && !string.IsNullOrEmpty(ev.Powtarzalnosc.CoIle))
                 {
                     DateTime currentStart = ev.StartDate;
                     DateTime currentEnd = ev.EndDate;
                     int count = ev.Powtarzalnosc.PrzezIle;
-
                     for (int i = 0; i < count; i++)
                     {
                         fullCalendarEvents.Add(new
@@ -103,6 +88,7 @@ namespace Kalendarz.Controllers
                         color = ev.TypWydarzenia?.Kolor,
                     });
                 }
+
             }
 
             return Json(fullCalendarEvents);
@@ -122,13 +108,84 @@ namespace Kalendarz.Controllers
         }
         public IActionResult Index()
         {
+            var currentUserEmail = User.Identity.Name;
+
+            if (currentUserEmail != AdminEmail)
+            {
+                return Unauthorized();
+            }
+
             return View();
         }
 
-        [Authorize]
-        public IActionResult Privacy()
+        public ActionResult Edit(int id)
         {
-            return View();
+            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+            var kalendarz = _context.Kal
+                .Include(k => k.Udostepnianie)
+                .FirstOrDefault(k => k.ID == id);
+
+            if (kalendarz == null)
+            {
+                return NotFound();
+            }
+
+            return View(kalendarz);
+        }
+
+        // POST: KalController/Edit/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Edit(int id, Kal kal)
+        {
+            try
+            {
+                var kalendarz = _context.Kal
+                    .Include(k => k.Udostepnianie)
+                    .FirstOrDefault(k => k.ID == id);
+                kalendarz.Udostepnianie.Udostepnij = kal.Udostepnianie.Udostepnij;
+                _context.SaveChanges();
+                return RedirectToAction(nameof(Index));
+            }
+            catch
+            {
+                return View();
+            }
+        }
+
+        // GET: KalController/Delete/5
+        public ActionResult Delete(int id)
+        {
+            var kalendarz = _context.Kal
+                .Include(k => k.TypWydarzenia)
+                .FirstOrDefault(k => k.ID == id);
+
+
+            if (kalendarz == null)
+            {
+                return NotFound();
+            }
+
+            return View(kalendarz);
+        }
+
+        // POST: KalController/Delete/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Delete(int id, Kal kal)
+        {
+            try
+            {
+                var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+                kal.KalendarzUserId = userId;
+                _context.Kal.Remove(kal);
+                _context.SaveChanges();
+                return RedirectToAction(nameof(Index));
+            }
+            catch
+            {
+                return View();
+            }
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
@@ -138,3 +195,4 @@ namespace Kalendarz.Controllers
         }
     }
 }
+

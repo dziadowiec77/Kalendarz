@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Kalendarz.Migrations
 {
     [DbContext(typeof(KalendarzDBContext))]
-    [Migration("20241226230322_Initial")]
-    partial class Initial
+    [Migration("20250112121609_Initial4")]
+    partial class Initial4
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -121,7 +121,6 @@ namespace Kalendarz.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Opis")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("StartDate")
@@ -139,6 +138,34 @@ namespace Kalendarz.Migrations
                     b.ToTable("Kal");
                 });
 
+            modelBuilder.Entity("Kalendarz.Models.Powtarzalnosc", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+
+                    b.Property<string>("CoIle")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("KalId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("Powtorz")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("PrzezIle")
+                        .HasColumnType("int");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("KalId")
+                        .IsUnique();
+
+                    b.ToTable("Powtarzalnosc");
+                });
+
             modelBuilder.Entity("Kalendarz.Models.TypWydarzenia", b =>
                 {
                     b.Property<int>("ID")
@@ -148,6 +175,7 @@ namespace Kalendarz.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
                     b.Property<string>("Kolor")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Nazwa")
@@ -162,6 +190,31 @@ namespace Kalendarz.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("TypWydarzenia");
+                });
+
+            modelBuilder.Entity("Kalendarz.Models.Udostepnianie", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+
+                    b.Property<string>("Email")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("KalId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("Udostepnij")
+                        .HasColumnType("bit");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("KalId")
+                        .IsUnique();
+
+                    b.ToTable("Udostepnianie");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole<int>", b =>
@@ -328,6 +381,17 @@ namespace Kalendarz.Migrations
                     b.Navigation("TypWydarzenia");
                 });
 
+            modelBuilder.Entity("Kalendarz.Models.Powtarzalnosc", b =>
+                {
+                    b.HasOne("Kalendarz.Models.Kal", "Kal")
+                        .WithOne("Powtarzalnosc")
+                        .HasForeignKey("Kalendarz.Models.Powtarzalnosc", "KalId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Kal");
+                });
+
             modelBuilder.Entity("Kalendarz.Models.TypWydarzenia", b =>
                 {
                     b.HasOne("Kalendarz.Areas.Identity.Data.KalendarzUser", "User")
@@ -337,6 +401,17 @@ namespace Kalendarz.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Kalendarz.Models.Udostepnianie", b =>
+                {
+                    b.HasOne("Kalendarz.Models.Kal", "Kal")
+                        .WithOne("Udostepnianie")
+                        .HasForeignKey("Kalendarz.Models.Udostepnianie", "KalId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Kal");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
@@ -393,6 +468,13 @@ namespace Kalendarz.Migrations
             modelBuilder.Entity("Kalendarz.Areas.Identity.Data.KalendarzUser", b =>
                 {
                     b.Navigation("Kal");
+                });
+
+            modelBuilder.Entity("Kalendarz.Models.Kal", b =>
+                {
+                    b.Navigation("Powtarzalnosc");
+
+                    b.Navigation("Udostepnianie");
                 });
 
             modelBuilder.Entity("Kalendarz.Models.TypWydarzenia", b =>

@@ -1,5 +1,5 @@
 ﻿@{
-    ViewData["Title"] = "Udostępniony kalendarz";
+    ViewData["Title"] = "Panel admina";
 }
 <html lang="en">
 <head>
@@ -13,8 +13,8 @@
             height: 600,
             navLinks: true,
             initialView: 'dayGridMonth',
-            events: '/Home/GetEvents',
-            headerToolbar: {  // Dodaj pasek narzędzi
+            events: '/Admin/GetEvents',
+            headerToolbar: {  
               left: 'prev,next today',
               center: 'title',
               right: 'dayGridMonth,timeGridWeek,timeGridDay'
@@ -24,7 +24,7 @@
               info.el.style.backgroundColor = info.event.extendedProps.backgroundColor;
             },
             eventClick: function (info) {
-              window.location.href = '/Home/Details/' + info.event.id;
+              window.location.href = '/Admin/Details/' + info.event.id;
             },
             eventDidRender: function (info) {
               var eventEl = info.el;
@@ -41,7 +41,7 @@
     </script>
 </head>
 <body>
-    <h1 style="text-align : center">Udostępniony Kalendarz</h1>
+    <h1 style="text-align : center">Udostępniony kalendarz dla admina</h1>
     <div id="calendar"></div>
 </body>
 </html>

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Kalendarz.Migrations
 {
     [DbContext(typeof(KalendarzDBContext))]
-    [Migration("20241227143552_Initial1")]
-    partial class Initial1
+    [Migration("20241229124522_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -110,6 +110,9 @@ namespace Kalendarz.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
+                    b.Property<string>("CoIle")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime2");
 
@@ -126,11 +129,17 @@ namespace Kalendarz.Migrations
                     b.Property<bool>("Powiadomienie")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("Powtarzalnosc")
+                        .HasColumnType("bit");
+
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
 
                     b.Property<int?>("TypWydarzeniaId")
                         .HasColumnType("int");
+
+                    b.Property<bool>("Udostepnij")
+                        .HasColumnType("bit");
 
                     b.HasKey("ID");
 
@@ -150,6 +159,7 @@ namespace Kalendarz.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
                     b.Property<string>("Kolor")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Nazwa")

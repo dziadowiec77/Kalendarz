@@ -99,4 +99,7 @@ public class KalendarzDBContext : IdentityDbContext<KalendarzUser, IdentityRole<
 public DbSet<Kalendarz.Models.Kal> Kal { get; set; } = default!;
 public DbSet<TypWydarzenia> TypWydarzenia { get; set; }
 
+public DbSet<Kalendarz.Models.Powtarzalnosc> Powtarzalnosc { get; set; } = default!;
+public DbSet<Kalendarz.Models.Udostepnianie> Udostepnianie { get; set; } = default!;
+
 }

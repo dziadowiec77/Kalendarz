@@ -1,14 +1,15 @@
 ﻿@model IEnumerable<Kalendarz.Models.TypWydarzenia>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Typy wydarzeń";
 }
 
-<h1>Index</h1>
-
+<h1 style="text-align : center">Twoje typy wydarzeń</h1>
+<div class="d-flex justify-content-center">
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create" class="btn btn-primary">Dodaj nowy typ</a>
 </p>
+</div>
 <table class="table">
     <thead>
         <tr>
@@ -31,8 +32,8 @@
                 @Html.DisplayFor(modelItem => item.Kolor)
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.ID">Edytuj</a> |
-                <a asp-action="Delete" asp-route-id="@item.ID">Usuń</a>
+                <a asp-action="Edit" asp-route-id="@item.ID" class="btn btn-info">Edytuj</a> |
+                <a asp-action="Delete" asp-route-id="@item.ID" class="btn btn-danger">Usuń</a>
             </td>
         </tr>
 }

@@ -9,17 +9,17 @@ namespace Kalendarz.Models
         public int ID { get; set; }
         public required string Nazwa { get; set; }
         public string? Opis { get; set; }
-        public DateTime StartDate { get; set; }
-        public DateTime EndDate { get; set; }
+        public required DateTime StartDate { get; set; }
+        public required DateTime EndDate { get; set; }
 
         public int KalendarzUserId { get; set; }
         public KalendarzUser? KalendarzUser { get; set; }
 
         public int? TypWydarzeniaId { get; set; }
         public TypWydarzenia? TypWydarzenia { get; set; }
-        public bool Powtarzalnosc { get; set; }
-        public string? CoIle { get; set; }
-        public bool Powiadomienie { get; set; }
-        public bool Udostepnij { get; set; }
+
+        public Powtarzalnosc? Powtarzalnosc { get; set; }
+
+        public Udostepnianie? Udostepnianie { get; set; }
     }
 }

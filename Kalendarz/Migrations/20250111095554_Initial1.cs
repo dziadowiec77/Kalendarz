@@ -5,24 +5,25 @@
 namespace Kalendarz.Migrations
 {
     /// <inheritdoc />
-    public partial class Initial3 : Migration
+    public partial class Initial1 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.RenameColumn(
-                name: "IsPublic",
-                table: "Kal",
-                newName: "Udostepnij");
+            migrationBuilder.DropColumn(
+                name: "Powiadomienie",
+                table: "Kal");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.RenameColumn(
-                name: "Udostepnij",
+            migrationBuilder.AddColumn<bool>(
+                name: "Powiadomienie",
                 table: "Kal",
-                newName: "IsPublic");
+                type: "bit",
+                nullable: false,
+                defaultValue: false);
         }
     }
 }

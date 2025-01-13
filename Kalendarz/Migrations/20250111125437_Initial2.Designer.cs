@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Kalendarz.Migrations
 {
     [DbContext(typeof(KalendarzDBContext))]
-    [Migration("20241227174353_Initial3")]
-    partial class Initial3
+    [Migration("20250111125437_Initial2")]
+    partial class Initial2
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -123,9 +123,6 @@ namespace Kalendarz.Migrations
                     b.Property<string>("Opis")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("Powiadomienie")
-                        .HasColumnType("bit");
-
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
 
@@ -144,6 +141,34 @@ namespace Kalendarz.Migrations
                     b.ToTable("Kal");
                 });
 
+            modelBuilder.Entity("Kalendarz.Models.Powtarzalnosc", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+
+                    b.Property<string>("CoIle")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("KalId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("Powtorz")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("PrzezIle")
+                        .HasColumnType("int");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("KalId")
+                        .IsUnique();
+
+                    b.ToTable("Powtarzalnosc");
+                });
+
             modelBuilder.Entity("Kalendarz.Models.TypWydarzenia", b =>
                 {
                     b.Property<int>("ID")
@@ -153,6 +178,7 @@ namespace Kalendarz.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
                     b.Property<string>("Kolor")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Nazwa")
@@ -333,6 +359,17 @@ namespace Kalendarz.Migrations
                     b.Navigation("TypWydarzenia");
                 });
 
+            modelBuilder.Entity("Kalendarz.Models.Powtarzalnosc", b =>
+                {
+                    b.HasOne("Kalendarz.Models.Kal", "Kal")
+                        .WithOne("Powtarzalnosc")
+                        .HasForeignKey("Kalendarz.Models.Powtarzalnosc", "KalId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Kal");
+                });
+
             modelBuilder.Entity("Kalendarz.Models.TypWydarzenia", b =>
                 {
                     b.HasOne("Kalendarz.Areas.Identity.Data.KalendarzUser", "User")
@@ -398,6 +435,12 @@ namespace Kalendarz.Migrations
             modelBuilder.Entity("Kalendarz.Areas.Identity.Data.KalendarzUser", b =>
                 {
                     b.Navigation("Kal");
+                });
+
+            modelBuilder.Entity("Kalendarz.Models.Kal", b =>
+                {
+                    b.Navigation("Powtarzalnosc")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Kalendarz.Models.TypWydarzenia", b =>

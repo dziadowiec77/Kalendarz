@@ -1,0 +1,66 @@
+﻿@model Kalendarz.Models.Powtarzalnosc
+
+@{
+    ViewData["Title"] = "Edycja powtarzalności";
+}
+
+<h1>Edytuj Powtarzalnosc</h1>
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="ID" />
+            <div class="form-group">
+                <input type="checkbox" id="Powtorz" name="Powtorz" value="true"
+                @(Model.Powtorz ? "checked" : "") />
+                <label for="Powtorz">Powtarzaj</label>
+            </div>
+            <div id="PowtarzalnoscOptions" style="display: @(Model.Powtorz ? "block" : "none");">
+                <div class="form-group">
+                    <label for="CoIle">Częstotliwość powtarzania</label>
+                    <select id="CoIle" name="CoIle" class="form-control">
+                        <option value="">Brak</option>
+                        <option value="Daily">Codziennie</option>
+                        <option value="Weekly">Co tydzień</option>
+                        <option value="Monthly">Co miesiąc</option>
+                        <option value="Yearly">Co rok</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label asp-for="PrzezIle" class="control-label"></label>
+                <input asp-for="PrzezIle" class="form-control" />
+                <span asp-validation-for="PrzezIle" class="text-danger"></span>
+            </div>
+            </div>
+            <div class="form-group">
+                <input style="margin-bottom : 5px" type="submit" value="Zapisz" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-route-id="@Model?.KalId" asp-action="Details" asp-controller="Kal" class="btn btn-info">Powrót</a>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const checkbox = document.getElementById('Powtorz');
+        const options = document.getElementById('PowtarzalnoscOptions');
+
+        const toggleOptions = () => {
+            if (checkbox.checked) {
+                options.style.display = 'block';
+            } else {
+                options.style.display = 'none';
+            }
+        };
+
+        toggleOptions();
+        checkbox.addEventListener('change', toggleOptions);
+    });
+</script>
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

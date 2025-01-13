@@ -183,7 +183,7 @@ namespace Kalendarz.Migrations
                     ID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Nazwa = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Kolor = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Kolor = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     UserId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -209,25 +209,28 @@ namespace Kalendarz.Migrations
                     StartDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     EndDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     KalendarzUserId = table.Column<int>(type: "int", nullable: false),
-                    TypWydarzeniaId = table.Column<int>(type: "int", nullable: true)
+                    TypWydarzeniaId = table.Column<int>(type: "int", nullable: true),
+                    Powtarzalnosc = table.Column<bool>(type: "bit", nullable: false),
+                    CoIle = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Powiadomienie = table.Column<bool>(type: "bit", nullable: false),
+                    Udostepnij = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
-                table.PrimaryKey("PK_Kal", x => x.ID);
-                table.ForeignKey(
-                    name: "FK_Kal_AspNetUser_KalendarzUserId",
-                    column: x => x.KalendarzUserId,
-                    principalSchema: "Security",
-                    principalTable: "AspNetUser",
-                    principalColumn: "AspNetUserId",
-                    onDelete: ReferentialAction.Cascade);
+                    table.PrimaryKey("PK_Kal", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_Kal_AspNetUser_KalendarzUserId",
+                        column: x => x.KalendarzUserId,
+                        principalSchema: "Security",
+                        principalTable: "AspNetUser",
+                        principalColumn: "AspNetUserId",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Kal_TypWydarzenia_TypWydarzeniaId",
                         column: x => x.TypWydarzeniaId,
                         principalTable: "TypWydarzenia",
-                        principalColumn: "ID",
-                onDelete: ReferentialAction.SetNull);
-        });
+                        principalColumn: "ID");
+                });
 
             migrationBuilder.CreateIndex(
                 name: "RoleNameIndex",

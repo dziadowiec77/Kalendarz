@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Kalendarz.Migrations
 {
     [DbContext(typeof(KalendarzDBContext))]
-    [Migration("20241227210214_Initial4")]
-    partial class Initial4
+    [Migration("20250111095554_Initial1")]
+    partial class Initial1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -126,9 +126,6 @@ namespace Kalendarz.Migrations
                     b.Property<string>("Opis")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("Powiadomienie")
-                        .HasColumnType("bit");
-
                     b.Property<bool>("Powtarzalnosc")
                         .HasColumnType("bit");
 
@@ -159,6 +156,7 @@ namespace Kalendarz.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
                     b.Property<string>("Kolor")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Nazwa")

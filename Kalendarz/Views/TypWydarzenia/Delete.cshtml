@@ -1,7 +1,7 @@
 ﻿@model Kalendarz.Models.TypWydarzenia
 
 @{
-    ViewData["Title"] = "Delete";
+    ViewData["Title"] = "Usuń typ";
 }
 
 <h1>Delete</h1>
@@ -28,6 +28,6 @@
     <form asp-action="Delete">
         <input type="hidden" asp-for="ID" />
         <input type="submit" value="Delete" class="btn btn-danger" /> |
-        <a asp-action="Index">Back to List</a>
+        <a asp-action="Index" class="btn btn-info">Powrót</a>
     </form>
 </div>

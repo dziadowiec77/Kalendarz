@@ -1,4 +1,5 @@
-﻿using System.Security.Claims;
+﻿using System.Globalization;
+using System.Security.Claims;
 using Kalendarz.Areas.Identity.Data;
 using Kalendarz.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -22,22 +23,21 @@ namespace Kalendarz.Controllers
         {
             var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
 
-            // Pobieramy wydarzenia dla zalogowanego użytkownika
             var events = _context.Kal
                 .Where(k => k.KalendarzUserId == userId)
                 .Include(k => k.TypWydarzenia)
+                .Include(k => k.Powtarzalnosc)
                 .ToList();
 
             var fullCalendarEvents = new List<object>();
 
             foreach (var ev in events)
             {
-                // Jeśli wydarzenie jest powtarzalne
-                if (ev.Powtarzalnosc == true && !string.IsNullOrEmpty(ev.CoIle))
+                if (ev.Powtarzalnosc?.Powtorz == true && !string.IsNullOrEmpty(ev.Powtarzalnosc.CoIle))
                 {
                     DateTime currentStart = ev.StartDate;
                     DateTime currentEnd = ev.EndDate;
-                    int count = 1;
+                    int count = ev.Powtarzalnosc.PrzezIle;
                     for (int i = 0; i < count; i++)
                     {
                         fullCalendarEvents.Add(new
@@ -51,35 +51,29 @@ namespace Kalendarz.Controllers
                             color = ev.TypWydarzenia?.Kolor
                         });
 
-                        // Dodaj interwał powtarzania
-                        switch (ev.CoIle)
+                        switch (ev.Powtarzalnosc.CoIle)
                         {
                             case "Daily":
                                 currentStart = currentStart.AddDays(1);
                                 currentEnd = currentEnd.AddDays(1);
-                                count = 7;
                                 break;
                             case "Weekly":
                                 currentStart = currentStart.AddDays(7);
                                 currentEnd = currentEnd.AddDays(7);
-                                count = 51;
                                 break;
                             case "Monthly":
                                 currentStart = currentStart.AddMonths(1);
                                 currentEnd = currentEnd.AddMonths(1);
-                                count = 12;
                                 break;
                             case "Yearly":
                                 currentStart = currentStart.AddYears(1);
                                 currentEnd = currentEnd.AddYears(1);
-                                count = 5;
                                 break;
                         }
                     }
                 }
                 else
                 {
-                    // Jeśli wydarzenie nie jest powtarzalne
                     fullCalendarEvents.Add(new
                     {
                         id = ev.ID,
@@ -88,7 +82,7 @@ namespace Kalendarz.Controllers
                         start = ev.StartDate,
                         end = ev.EndDate,
                         type = ev.TypWydarzeniaId,
-                        color = ev.TypWydarzenia?.Kolor
+                        color = ev.TypWydarzenia?.Kolor,
                     });
                 }
 
@@ -110,6 +104,7 @@ namespace Kalendarz.Controllers
         {
             var kalendarz = _context.Kal
             .Include(k => k.TypWydarzenia)
+            .Include(k => k.Powtarzalnosc)
             .FirstOrDefault(k => k.ID == id);
             
 
@@ -139,6 +134,26 @@ namespace Kalendarz.Controllers
                 var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
                 kal.KalendarzUserId = userId;
                 _context.Kal.Add(kal);
+                _context.SaveChanges();
+                var powtarzalnosc = new Powtarzalnosc
+                {
+                    Powtorz = false,
+                    CoIle = "Brak",
+                    PrzezIle = 0,
+                    KalId = kal.ID,
+
+                };
+
+                var udostepnianie = new Udostepnianie
+                {
+                    Udostepnij = false,
+                    Email = "",
+                    KalId = kal.ID,
+
+                };
+
+                _context.Powtarzalnosc.Add(powtarzalnosc);
+                _context.Udostepnianie.Add(udostepnianie);
                 _context.SaveChanges();
                 return RedirectToAction("Index");
             }

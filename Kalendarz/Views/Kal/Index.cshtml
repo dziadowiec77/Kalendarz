@@ -1,5 +1,5 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Twój kalendarz";
 }
 <html lang="en">
 <head>
@@ -14,7 +14,7 @@
                 navLinks: true,
                 initialView: 'dayGridMonth',
                 events: '/Kal/GetEvents',
-                headerToolbar: {           // Dodaj pasek narzędzi
+                headerToolbar: {        
                     left: 'prev,next today',
                     center: 'title',
                     right: 'dayGridMonth,timeGridWeek,timeGridDay'
@@ -31,12 +31,12 @@
     </script>
 </head>
 <body>
-    <p>
-        <a asp-action="Create">Dodaj nowe wydarzenie</a>
+    <h1 style="text-align : center">Twój kalendarz</h1>
+    <div class="d-flex justify-content-center">
+    <p >
+        <a asp-action="Create" class="btn btn-primary">Dodaj nowe wydarzenie</a>
     </p>
-    <p>
-        <a asp-controller="TypWydarzenia" asp-action="Create">Dodaj nową kategorie</a>
-    </p>
+    </div>
     <div id="calendar"></div>
 </body>
 </html>
